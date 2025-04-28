@@ -2,7 +2,6 @@ import streamlit as st
 import requests
 from datetime import datetime, timedelta
 import pandas as pd
-import plotly.express as px
 
 # This is a placeholder for a built-in API key.
 # In a real application, you would handle API keys more securely.
@@ -91,32 +90,31 @@ if Analyse:
             with col6:
                 st.metric("Pressure", f"{main_info.get('pressure', 'N/A')} hPa")
 
-           # Temperature Chart (Modified to be a bar chart for single values)
+            # Temperature Chart
             temp_data = pd.DataFrame({
                 'Metric': ['Temperature', 'Feels Like', 'Min Temp', 'Max Temp'],
                 'Value': [main_info['temp'], main_info['feels_like'],
                           main_info['temp_min'], main_info['temp_max']]
             })
-            fig_temp = px.area(temp_data, x='Metric', y='Value',
-                               title=f"Temperature Details ({temp_unit_display})")
-            st.plotly_chart(fig_temp, use_container_width=True)
+            st.subheader("Temperature Details")
+            st.line_chart(temp_data, x='Metric', y='Value')
 
             # Humidity Chart
             humidity_df = pd.DataFrame({'Humidity': [main_info['humidity']]})
-            fig_humidity = px.bar(humidity_df, y='Humidity', title="Humidity Level")
-            st.plotly_chart(fig_humidity, use_container_width=True)
+            st.subheader("Humidity Level")
+            st.bar_chart(humidity_df, y='Humidity')
 
             if wind_info:
                 # Wind Speed Chart
                 wind_df = pd.DataFrame({'Wind Speed': [wind_info.get('speed')]})
-                fig_wind = px.bar(wind_df, y='Wind Speed', title=f"Wind Speed (m/s)")
-                st.plotly_chart(fig_wind, use_container_width=True)
+                st.subheader("Wind Speed (m/s)")
+                st.bar_chart(wind_df, y='Wind Speed')
 
             if clouds_info:
                 # Cloudiness Chart
                 clouds_df = pd.DataFrame({'Cloudiness': [clouds_info.get('all')]})
-                fig_clouds = px.line(clouds_df, y='Cloudiness', title="Cloudiness (%)")
-                st.plotly_chart(fig_clouds, use_container_width=True)
+                st.subheader("Cloudiness (%)")
+                st.line_chart(clouds_df, y='Cloudiness')
 
         else:
             st.error("Could not retrieve main weather information.")
@@ -140,9 +138,8 @@ if Analyse:
             st.dataframe(forecast_df_display)
 
             # Temperature Forecast Chart
-            fig_forecast_temp = px.area(forecast_df, x='dt_txt', y='temp',
-                                       title=f"5-Day Temperature Forecast ({temp_unit_display})")
-            st.plotly_chart(fig_forecast_temp, use_container_width=True)
+            st.subheader(f"5-Day Temperature Forecast ({temp_unit_display})")
+            st.line_chart(forecast_df, x='dt_txt', y='temp')
         else:
             st.warning("Forecast data not available.")
     else:
